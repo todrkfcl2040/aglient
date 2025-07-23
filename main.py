@@ -17,7 +17,7 @@ class SpectrumViewer(QWidget):
         self.ax = self.canvas.figure.subplots()
         self.layout.addWidget(self.canvas)
 
-        self.btn_acquire = QPushButton("스펙트럼 불러오기 및 저장")
+        self.btn_acquire = QPushButton("측정 시작")
         self.btn_acquire.clicked.connect(self.acquire_spectrum)
         self.layout.addWidget(self.btn_acquire)
 
@@ -30,6 +30,9 @@ class SpectrumViewer(QWidget):
             osa = rm.open_resource('GPIB0::18::INSTR')
             osa.timeout = 10000
             print("Device ID:", osa.query("*IDN?"))
+
+            osa.write(":INITiate")  # 측정 실행
+            osa.query("*OPC?")      # 측정 완료 대기
 
             osa.write(":TRACe:DATA:Y?")
             data_str = osa.read()
